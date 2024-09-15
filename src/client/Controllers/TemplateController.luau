@@ -15,9 +15,19 @@
 
 local Controller = {}
 
+local Event, ProfileService
+
 function Controller:PreInit() end -- ran after all modules are loaded
 
-function Controller:Init() end -- ran after all controllers are pre-initialized
+function Controller:Init() 
+    Event = shared.Import "Event" --example usage of importing a module
+    ProfileService = shared.Import("ProfileService") --alternative method
+
+    Event:Listen("HelloEvent", function(message)
+        print("The server says " .. message .. "!")
+    end)
+
+end -- ran after all controllers are pre-initialized
 
 function Controller.Update(deltaTime) end -- ran every frame
 

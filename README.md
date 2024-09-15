@@ -14,3 +14,5 @@ Built in libraries:
 - EzShake
 - Event
 - ProfileService
+
+## See example controller [here](src/client/Controllers/TemplateController.luau)
