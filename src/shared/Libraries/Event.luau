@@ -66,11 +66,11 @@ if RunService:IsServer() then
         if not EventService._Connections[EventName] then return end
 
         for _, Callback in ipairs(EventService._Connections[EventName]) do
-            Callback(Player, ...)
+            return Callback(Player, ...)
         end
     end
 else
-    EventService._RemoteEvent = ReplicatedStorage:WaitForChild("EventServiceEvent")
+    EventService._RemoteEvent = ReplicatedStorage:WaitForChild("EventServiceRemote")
     EventService._RemoteFunction = ReplicatedStorage:WaitForChild("EventServiceFunction")
 
     function EventService:FireServer(EventName, ...)

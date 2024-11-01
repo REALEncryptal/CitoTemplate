@@ -40,7 +40,8 @@ function Cito:PreInit(Path)
 		table.insert(self.Controllers, Module)
 
 		if Module.PreInit then
-			task.spawn(pcall, Module.PreInit)
+			-- we want this to finish before we continue
+			Module:PreInit()
 		end
 	end
 
@@ -50,7 +51,8 @@ end
 function Cito:Init()
 	for _, Module in ipairs(self.Controllers) do
 		if Module.Init then
-			task.spawn(pcall, Module.Init)
+			-- we dont care if this finishes
+			task.spawn(Module.Init)
 		end
 	end
 
@@ -68,18 +70,28 @@ function Cito:Init()
 		InputEnded = function(Callback)
 			UserInputService.InputEnded:Connect(Callback)
 		end,
+		PlayerAdded = function(Callback)
+			game.Players.PlayerAdded:Connect(Callback)
+		end,
+		PlayerRemoving = function(Callback)
+			game.Players.PlayerRemoving:Connect(Callback)
+		end,
 		CharacterAdded = function(Callback)
+			if not RunService:IsClient() then return end
 			game.Players.LocalPlayer.CharacterAdded:Connect(Callback)
 		end,
 		CharacterRemoving = function(Callback)
+			if not RunService:IsClient() then return end
 			game.Players.LocalPlayer.CharacterRemoving:Connect(Callback)
 		end
 	}
 
+
 	for Name, Function in pairs(BuiltFunctions) do
 		for _, Module in ipairs(self.Controllers) do
-			if not Module[Name] then return end
-			task.spawn(pcall, Function(Module[Name]))
+			if not Module[Name] then continue end
+
+			Function(Module[Name])
 		end
 	end
 
