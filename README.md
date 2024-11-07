@@ -12,7 +12,7 @@ Use `shared.Import "MODULE_NAME"` to require modules.
 
 Built in libraries:
 - EzShake
-- Event
+- Event (fixed)
 - ProfileService
 
 ## See example controller [here](src/client/Controllers/TemplateController.luau)
