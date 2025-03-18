@@ -1,7 +1,7 @@
 --[[
 
-    CITO CONTROLLER
-    A template for a controller module.
+    CITO CONTROLLER - SERVER
+    A template for a server controller module.
 
     Init is the function that initializes the controller according to its priority.
     
@@ -41,21 +41,26 @@ function Controller:Init()
     -- These will already be available because they're listed in Dependencies
     Event = shared.Import("Event") --example usage of importing a module
 
-    -- Example usage of the Event module
-    Event:Listen("HelloEvent", function(message)
-        print("The server says " .. message .. "!")
+    -- Example usage of the Event module - SERVER FIRES EVENT
+    task.spawn(function()
+        while true do
+            -- Fire the event every 5 seconds
+            Event:FireAllClients("HelloEvent", "Hello from server!")
+            task.wait(1)
+        end
     end)
 end
 
 -- All signals are now under the Signals table
 function Controller.Signals.Update(deltaTime) end -- ran every frame
 
-function Controller.Signals.InputBegan(input, gameProccessed) end -- ran when input is detected
+-- The following signals are server-specific
+function Controller.Signals.PlayerAdded(player) 
+    print("Player joined: " .. player.Name)
+end
 
-function Controller.Signals.InputEnded(input, gameProccessed) end -- ran when input is no longer detected
-
-function Controller.Signals.CharacterAdded(character) end -- ran when the character is added
-
-function Controller.Signals.CharacterRemoving(character) end -- ran when the character is removed
+function Controller.Signals.PlayerRemoving(player) 
+    print("Player left: " .. player.Name)
+end
 
 return Controller
