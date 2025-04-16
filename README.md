@@ -18,7 +18,6 @@
 ## 🌟 Features
 
 - **Priority-Based Initialization** - Fine-grained control over module loading order
-- **Dependency Resolution** - Automatic handling of module dependencies
 - **Signal Management** - Built-in event handling for common Roblox events
 - **Simple Module Importing** - Clean, easy-to-use module importing system
 - **Error Handling** - Robust error handling throughout the framework
@@ -43,7 +42,6 @@ local Controller = {}
 
 Controller.Signals = {}
 Controller.Priority = 500 -- Normal priority (default)
-Controller.Dependencies = {"Event"} -- Modules this controller depends on
 
 function Controller:Init()
     local Event = shared.Import("Event")

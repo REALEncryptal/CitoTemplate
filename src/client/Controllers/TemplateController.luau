@@ -27,12 +27,6 @@ Controller.Signals = {}
 -- Using the Constants.PRIORITY table is recommended
 Controller.Priority = 500 -- Normal priority (same as Constants.PRIORITY.NORMAL)
 
--- List of dependencies (these modules will be initialized before this controller)
--- These can be either:
--- 1. Other controllers in the Controllers folder
--- 2. Modules that can be imported via shared.Import
-Controller.Dependencies = {"Event"} 
-
 -- Local references to imported modules
 local Event
 

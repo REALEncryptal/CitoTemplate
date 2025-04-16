@@ -154,17 +154,30 @@ end
 
 --[[
     @function Cito:LoadModules
-    Loads all modules from the specified path but doesn't initialize them
-    @param Path Instance - Path containing modules to load
+    Loads all modules from the specified path or table of ModuleScripts
+    @param Path Instance | {ModuleScript} - Path containing modules to load or table of ModuleScripts
     @return CitoInstance - The Cito instance (for method chaining)
 ]]
-function Cito:LoadModules(Path: Instance)
+function Cito:LoadModules(Path: Instance | {ModuleScript})
 	assert(Path, "Path cannot be nil")
-	assert(typeof(Path) == "Instance", "Path must be an Instance")
+	assert(typeof(Path) == "Instance" or typeof(Path) == "table", "Path must be an Instance or table of ModuleScripts")
 	
-	for _, Module in ipairs(Path:GetDescendants()) do
+	if typeof(Path) == "Instance" then
+		Path = Path:GetDescendants()
+	end
+
+	for _, Module in ipairs(Path) do
 		if not Module:IsA("ModuleScript") then continue end
 
+		-- Verify run context
+		local IsServer = Module:GetAttribute("IsServer")
+		if IsServer ~= nil then
+			if RunService:IsServer() ~= IsServer then
+				continue
+			end
+		end
+
+		-- 
 		local moduleName = Module.Name
 		
 		-- Safely require the module
@@ -176,6 +189,11 @@ function Cito:LoadModules(Path: Instance)
 			warn("[Cito] Failed to require module " .. Module:GetFullName() .. ": " .. tostring(loadedModule))
 			continue
 		end
+
+		-- Add metadata
+		loadedModule._Cito = {
+			_Module = Module
+		}
 
 		-- Store module in array and map
 		table.insert(self.Controllers, loadedModule)
@@ -278,6 +296,14 @@ function Cito:Init()
 	for i, module in ipairs(orderedControllers) do
 		local name = getControllerName(module, i, self.ControllerMap)
 		
+		-- Skip if already initialized
+		if module._Cito and module._Cito._Initialized then
+			continue
+		end
+		
+		module._Cito._Initialized = true
+		module._Cito._InitTime = tick()
+		
 		if module.Init then
 			local success, error = pcall(function()
 				module:Init()
@@ -325,8 +351,25 @@ function Cito:Init()
 		for i, Module in ipairs(self.Controllers) do
 			local moduleName = getControllerName(Module, i, self.ControllerMap)
 			
-			-- Check if the module has a Signals table and if the specific signal exists
+			-- Skip if module doesn't have signals or this specific signal
 			if not Module.Signals or not Module.Signals[Name] then continue end
+			
+			-- Skip if this signal has already been connected for this module
+			if Module._Cito and Module._Cito._ConnectedSignals and Module._Cito._ConnectedSignals[Name] then
+				continue
+			end
+			
+			-- Initialize _ConnectedSignals if needed
+			if not Module._Cito then
+				Module._Cito = {
+					_Initialized = false,
+					_InitTime = nil,
+					_Module = Module,
+					_ConnectedSignals = {}
+				}
+			elseif not Module._Cito._ConnectedSignals then
+				Module._Cito._ConnectedSignals = {}
+			end
 			
 			-- Create a wrapper function that can properly handle varargs
 			local signalHandler = Module.Signals[Name]
@@ -340,6 +383,9 @@ function Cito:Init()
 					warn("[Cito] Error in signal handler " .. Name .. " for " .. moduleName .. ": " .. tostring(err))
 				end
 			end)
+			
+			-- Mark this signal as connected
+			Module._Cito._ConnectedSignals[Name] = true
 		end
 	end
 
