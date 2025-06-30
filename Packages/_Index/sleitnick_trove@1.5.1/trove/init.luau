@@ -12,6 +12,7 @@ export type Trove = {
 	Add: <T>(self: Trove, object: T & Trackable, cleanupMethod: string?) -> T,
 	Remove: <T>(self: Trove, object: T & Trackable) -> boolean,
 	Clean: (self: Trove) -> (),
+	WrapClean: (self: Trove) -> () -> (),
 	AttachToInstance: (self: Trove, instance: Instance) -> RBXScriptConnection,
 	Destroy: (self: Trove) -> (),
 }
@@ -544,7 +545,7 @@ end
 
 function Trove._cleanupObject(_self: TroveInternal, object: any, cleanupMethod: string?)
 	if cleanupMethod == FN_MARKER then
-		object()
+		task.spawn(object)
 	elseif cleanupMethod == THREAD_MARKER then
 		pcall(task.cancel, object)
 	else

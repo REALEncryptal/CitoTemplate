@@ -44,15 +44,8 @@ Controller.Signals = {}
 Controller.Priority = 500 -- Normal priority (default)
 
 function Controller:Init()
-    local Event = shared.Import("Event")
-    
     -- Your initialization code here
     print("Controller initialized!")
-    
-    -- Example of listening to an event
-    Event:Listen("MyEvent", function(message)
-        print("Event received: " .. message)
-    end)
 end
 
 -- Signal handlers
@@ -97,10 +90,9 @@ The framework uses a priority system (1-1000) to determine initialization order:
 | 901-1000 | PRIORITY.LATE / PRIORITY.LAST | Non-critical systems |
 
 ## 🛠️ Built-in Libraries
-
-- **Event** - Robust cross-server event handling
 - **EzShake** - Camera shake implementation
 - **ProfileService** - Data persistence ([loleris/ProfileService](https://github.com/MadStudioRoblox/ProfileService))
+- + Other libraries are available in the [Packages](Packages) directory.
 
 ## 🔍 Example Controllers
 
