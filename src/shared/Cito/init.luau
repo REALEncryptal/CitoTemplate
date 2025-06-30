@@ -72,6 +72,10 @@ local moduleNames = {}
 function Cito.new()
 	local self = setmetatable({}, Cito) :: CitoInstance
 
+	-- to get load time
+	self.InitialTime = tick()
+	self.Debug = true
+
 	self.Controllers = {}
 	self.ControllerMap = {}
 
@@ -300,12 +304,15 @@ function Cito:Init()
 		if module._Cito and module._Cito._Initialized then
 			continue
 		end
-		
+
+		if module._Raw then continue end
+			
 		module._Cito._Initialized = true
 		module._Cito._InitTime = tick()
 		
 		if module.Init then
 			local success, error = pcall(function()
+				self:DebugPrint("Initializing " .. name)
 				module:Init()
 			end)
 			
@@ -390,6 +397,15 @@ function Cito:Init()
 	end
 
 	return self
+end
+
+function Cito:DebugPrint(...)
+	if not self.Debug then return end
+
+	local isClient = RunService:IsClient()
+	
+	
+	print(isClient and "Client" or "Server", "[Cito]", ...)
 end
 
 return Cito
