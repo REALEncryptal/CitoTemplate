@@ -24,6 +24,20 @@ local Constants = {
     }
 }
 
+
+---------
+
+
+-- ProfileController
+Constants.PROFILE_TEMPLATE = {}
+Constants.PROFILE_LEADERSTATS = {}
+
+
+
+
+---------
+
+
 --[[
     @function Constants:Debug
     Prints a message if DEBUG is enabled

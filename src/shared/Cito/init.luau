@@ -61,6 +61,9 @@ local UserInputService = game:GetService("UserInputService")
 local Librarian = require(script.Librarian)
 local Constants = nil -- Will be loaded via Librarian
 
+local IsServer = RunService:IsServer()
+local IsStudio = RunService:IsStudio()
+
 -- Map to track modules by name (for dependency resolution)
 local moduleNames = {}
 
@@ -79,7 +82,21 @@ function Cito.new()
 	self.Controllers = {}
 	self.ControllerMap = {}
 
+	self:PrintData()
+
 	return self
+end
+
+function Cito:PrintData()
+	if
+		(IsStudio and IsServer) 
+		or
+		(not IsStudio)
+	then
+		print("-----")
+		print(game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)["Name"] .. " - v" .. game.PlaceVersion)
+		print("-----")
+	end
 end
 
 --[[
@@ -191,6 +208,7 @@ function Cito:LoadModules(Path: Instance | {ModuleScript})
 
 		if not success then
 			warn("[Cito] Failed to require module " .. Module:GetFullName() .. ": " .. tostring(loadedModule))
+			warn(debug.traceback())
 			continue
 		end
 
@@ -227,7 +245,7 @@ local function resolveInitOrder(controllers, controllerMap)
 	-- Assign default priority if not set
 	for _, controller in ipairs(controllers) do
 		if not controller.Priority then
-			controller.Priority = Constants.PRIORITY.NORMAL
+			controller.Priority = 100
 		end
 	end
 	
@@ -274,7 +292,7 @@ local function resolveInitOrder(controllers, controllerMap)
 	
 	-- Sort controllers by priority (lower first)
 	table.sort(controllers, function(a, b) 
-		return (a.Priority or Constants.PRIORITY.NORMAL) < (b.Priority or Constants.PRIORITY.NORMAL) 
+		return (a.Priority or 100) < (b.Priority or 100) 
 	end)
 	
 	-- Visit each controller in priority order
@@ -293,6 +311,7 @@ end
     @return CitoInstance - The Cito instance (for method chaining)
 ]]
 function Cito:Init()
+	self.StartTime = tick()
 	-- Determine initialization order based on priorities and dependencies
 	local orderedControllers = resolveInitOrder(self.Controllers, self.ControllerMap)
 	
@@ -305,6 +324,7 @@ function Cito:Init()
 			continue
 		end
 
+		-- Skip raw modules
 		if module._Raw then continue end
 			
 		module._Cito._Initialized = true
@@ -318,6 +338,7 @@ function Cito:Init()
 			
 			if not success then
 				warn("[Cito] Error in Init for " .. name .. ": " .. tostring(error))
+				warn(debug.traceback())
 			end
 		end
 	end
@@ -388,6 +409,7 @@ function Cito:Init()
 				
 				if not success then
 					warn("[Cito] Error in signal handler " .. Name .. " for " .. moduleName .. ": " .. tostring(err))
+					warn(debug.traceback())
 				end
 			end)
 			
@@ -395,6 +417,8 @@ function Cito:Init()
 			Module._Cito._ConnectedSignals[Name] = true
 		end
 	end
+
+	self:DebugPrint("Initialized in " .. math.round((tick() - self.StartTime) * 100) / 100 .. " seconds")
 
 	return self
 end
