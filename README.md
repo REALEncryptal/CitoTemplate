@@ -2,16 +2,18 @@
 
 <div align="center">
   <pre>
-   ______  __  ______  ______       
-  / ____/ / / /_  __/ / __ \        
- / /     / /   / /   / / / /        
-/ /___  / /___/ /_  / /_/ /         
-\____/ /_____/\__/  \____/          
+  .oooooo.   ooooo ooooooooooooo   .oooooo.   
+ d8P'  `Y8b  `888' 8'   888   `8  d8P'  `Y8b  
+888           888       888      888      888 
+888           888       888      888      888 
+888           888       888      888      888 
+`88b    ooo   888       888      `88b    d88' 
+ `Y8bood8P'  o888o     o888o      `Y8bood8P'      
   </pre>
   <p><em>A powerful, lightweight module loader for Roblox game development</em></p>
   
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-  [![Roblox Compatible](https://img.shields.io/badge/Roblox-Compatible-blue.svg)](https://www.roblox.com)
+  [![Roblox](https://img.shields.io/badge/Roblox-blue.svg)](https://www.roblox.com)
   [![Luau](https://img.shields.io/badge/Language-Luau-blue.svg)](https://luau-lang.org/)
 </div>
 
@@ -21,7 +23,6 @@
 - **Signal Management** - Built-in event handling for common Roblox events
 - **Simple Module Importing** - Clean, easy-to-use module importing system
 - **Error Handling** - Robust error handling throughout the framework
-- **Type Definitions** - Full type definitions for improved IDE support
 
 ## 📋 Installation
 
@@ -79,16 +80,7 @@ local MyModule = shared.Import("ModuleName")
 
 ## 📚 Module Priorities
 
-The framework uses a priority system (1-1000) to determine initialization order:
-
-| Priority Range | Constant | Purpose |
-|----------------|----------|---------|
-| 1-100 | PRIORITY.FIRST / PRIORITY.CORE | Core services (data stores, critical systems) |
-| 101-300 | PRIORITY.EARLY | Game systems (world, physics) |
-| 301-700 | PRIORITY.NORMAL | Standard gameplay elements |
-| 701-900 | PRIORITY.INTERFACE | UI systems |
-| 901-1000 | PRIORITY.LATE / PRIORITY.LAST | Non-critical systems |
-
+The framework uses a priority system (1-1000) to determine initialization order. Lower numbers are high priority while high numbers are low priority.
 ## 🛠️ Built-in Libraries
 - **EzShake** - Camera shake implementation
 - **ProfileService** - Data persistence ([loleris/ProfileService](https://github.com/MadStudioRoblox/ProfileService))
@@ -109,11 +101,15 @@ CitoTemplate/
 │   │   └── init.client.luau  
 │   ├── server/            # Server-side code
 │   │   ├── Controllers/   # Server controllers
+│   │   ├── Libraries/     # Server Libraries
+│   │   ├── Data/          # Server Data
 │   │   └── init.server.luau
 │   └── shared/            # Shared code
 │       ├── Cito/          # Framework core
 │       ├── Data/          # Game data
-│       └── Libraries/     # Shared libraries
+│       ├── Libraries/     # Shared libraries
+│       ├── Classes/       # Classes
+│       └── Utils/         # Smaller Utilities
 └── default.project.json   # Roblox project configuration
 ```
 
