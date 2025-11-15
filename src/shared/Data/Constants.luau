@@ -1,15 +1,14 @@
 local Constants = {}
 
+Constants.GAME_NAME = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+Constants.GAME_VERSION = game.PlaceVersion 
+
 ---------
 
 -- ProfileController
 Constants.PROFILE_TEMPLATE = {}
 Constants.PROFILE_LEADERSTATS = {}
 Constants.PROFILE_SAVE = true   -- Load data?
-
-
-
-
 
 ---------
 
